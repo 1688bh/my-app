@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clario APP — 讓思考更清晰，決策更簡單</title>
+  <meta name="description" content="Clario 把煩惱轉成選擇題，結合 AI 智慧分析，給你客觀的思考方向。需串接自己的 Gemini API Key。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --orange: #FF6B2C;
+      --orange-deep: #E85A1A;
+      --orange-soft: #FFF4EE;
+      --bg-tint: #FFF8F4;
+      --ink: #1A1A1A;
+      --muted: #5C5C5C;
+      --white: #FFFFFF;
+      --radius: 12px;
+      --max: 1120px;
+      --nav-h: 72px;
+      --font-display: "Outfit", sans-serif;
+      --font-body: "Nunito", sans-serif;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      color: var(--ink);
+      background: var(--white);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    h1, h2, h3 {
+      font-family: var(--font-display);
+      line-height: 1.15;
+      margin: 0 0 0.6em;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      margin: 0 0 1em;
+    }
+
+    .wrap {
+      width: min(100% - 2.5rem, var(--max));
+      margin-inline: auto;
+    }
+
+    /* —— Nav —— */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: var(--nav-h);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 107, 44, 0.12);
+    }
+
+    .nav {
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--orange);
+      letter-spacing: -0.03em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-links a {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--muted);
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--orange);
+    }
+
+    .nav-cta {
+      display: none;
+    }
+
+    .menu-toggle {
+      display: none;
+      border: none;
+      background: transparent;
+      padding: 0.4rem;
+      cursor: pointer;
+    }
+
+    .menu-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      margin: 5px 0;
+      background: var(--ink);
+      border-radius: 2px;
+    }
+
+    /* —— Buttons —— */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 0.85rem 1.5rem;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: var(--orange);
+      color: var(--white);
+      box-shadow: 0 8px 24px rgba(255, 107, 44, 0.28);
+    }
+
+    .btn-primary:hover {
+      background: var(--orange-deep);
+      box-shadow: 0 10px 28px rgba(232, 90, 26, 0.35);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--ink);
+      border-color: rgba(26, 26, 26, 0.18);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .btn-light {
+      background: var(--white);
+      color: var(--orange-deep);
+    }
+
+    .btn-light:hover {
+      background: var(--orange-soft);
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .note {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin: 0.85rem 0 0;
+    }
+
+    /* —— Reveal motion —— */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* —— Hero —— */
+    .hero {
+      position: relative;
+      min-height: calc(100vh - var(--nav-h));
+      display: flex;
+      align-items: flex-end;
+      color: var(--white);
+      overflow: hidden;
+    }
+
+    .hero-media {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      animation: heroZoom 18s ease-out forwards;
+    }
+
+    @keyframes heroZoom {
+      from { transform: scale(1.08); }
+      to { transform: scale(1); }
+    }
+
+    .hero-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(26, 26, 26, 0.25) 0%, rgba(26, 26, 26, 0.55) 45%, rgba(26, 26, 26, 0.82) 100%),
+        linear-gradient(90deg, rgba(255, 107, 44, 0.22) 0%, transparent 55%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      padding: 4.5rem 0 5rem;
+      max-width: 640px;
+    }
+
+    .brand-mark {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(2.75rem, 7vw, 4.5rem);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin: 0 0 0.75rem;
+      color: var(--white);
+      text-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .brand-mark span {
+      color: #FFB48A;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.95);
+      margin-bottom: 0.85rem;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.88);
+      max-width: 34em;
+    }
+
+    .hero .note {
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .hero .btn-ghost {
+      color: var(--white);
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+
+    .hero .btn-ghost:hover {
+      border-color: var(--white);
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--white);
+    }
+
+    /* —— Sections shared —— */
+    section {
+      padding: 5.5rem 0;
+    }
+
+    .section-label {
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.85rem, 4vw, 2.6rem);
+      max-width: 16em;
+    }
+
+    .section-lead {
+      font-size: 1.125rem;
+      color: var(--muted);
+      max-width: 36em;
+    }
+
+    .bg-soft {
+      background: var(--bg-tint);
+    }
+
+    .bg-orange-soft {
+      background: var(--orange-soft);
+    }
+
+    /* —— Pain —— */
+    .pain-list {
+      list-style: none;
+      margin: 2.5rem 0 2rem;
+      padding: 0;
+      display: grid;
+      gap: 1.25rem;
+      counter-reset: pain;
+    }
+
+    .pain-list li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: start;
+      font-size: 1.15rem;
+      font-weight: 600;
+      counter-increment: pain;
+    }
+
+    .pain-list li::before {
+      content: counter(pain, decimal-leading-zero);
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.35rem;
+      color: var(--orange);
+      line-height: 1.3;
+    }
+
+    .pain-close {
+      font-size: 1.1rem;
+      font-weight: 700;
+      max-width: 36em;
+      margin: 0;
+      padding-top: 0.5rem;
+      border-top: 2px solid rgba(255, 107, 44, 0.25);
+    }
+
+    /* —— How —— */
+    .how-grid {
+      display: grid;
+      gap: 2.5rem;
+      align-items: center;
+      margin-top: 2.5rem;
+    }
+
+    @media (min-width: 900px) {
+      .how-grid {
+        grid-template-columns: 1fr 1.05fr;
+        gap: 3.5rem;
+      }
+    }
+
+    .steps {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 1.75rem;
+    }
+
+    .steps li {
+      display: grid;
+      grid-template-columns: 3rem 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .step-num {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      background: var(--orange);
+      color: var(--white);
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.15rem;
+      display: grid;
+      place-items: center;
+    }
+
+    .steps h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .steps p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .how-note {
+      margin-top: 2rem;
+      padding: 1rem 1.15rem;
+      background: var(--orange-soft);
+      border-left: 4px solid var(--orange);
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .how-visual {
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      border-radius: var(--radius);
+    }
+
+    .how-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* —— Scenes —— */
+    .scenes-layout {
+      display: grid;
+      gap: 2.5rem;
+      margin-top: 2.5rem;
+    }
+
+    @media (min-width: 900px) {
+      .scenes-layout {
+        grid-template-columns: 1.1fr 1fr;
+        align-items: start;
+        gap: 3rem;
+      }
+    }
+
+    .scenes-visual {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    @media (min-width: 600px) {
+      .scenes-visual {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .scenes-visual figure {
+      margin: 0;
+      aspect-ratio: 3 / 2;
+      overflow: hidden;
+      border-radius: var(--radius);
+    }
+
+    .scenes-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .scenes-visual figure:hover img {
+      transform: scale(1.04);
+    }
+
+    .scene-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .scene-list h3 {
+      font-size: 1.15rem;
+      margin-bottom: 0.2rem;
+      color: var(--orange-deep);
+    }
+
+    .scene-list p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .scenes-cta {
+      margin-top: 2rem;
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .scenes-cta a {
+      color: var(--orange);
+      border-bottom: 2px solid currentColor;
+      transition: color 0.2s ease;
+    }
+
+    .scenes-cta a:hover {
+      color: var(--orange-deep);
+    }
+
+    /* —— Why —— */
+    .why-points {
+      list-style: none;
+      margin: 2.5rem 0 0;
+      padding: 0;
+      display: grid;
+      gap: 1.75rem;
+    }
+
+    @media (min-width: 768px) {
+      .why-points {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+      }
+    }
+
+    .why-points li {
+      padding-top: 1rem;
+      border-top: 3px solid var(--orange);
+    }
+
+    .why-points h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .why-points p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .why-tagline {
+      margin-top: 2.5rem;
+      font-family: var(--font-display);
+      font-size: clamp(1.35rem, 3vw, 1.75rem);
+      font-weight: 700;
+      color: var(--orange-deep);
+    }
+
+    /* —— Get started —— */
+    .start-row {
+      display: grid;
+      gap: 2rem;
+      margin-top: 2rem;
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .start-row {
+        grid-template-columns: 1fr auto;
+      }
+    }
+
+    .start-steps {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .start-steps li {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .start-steps .dot {
+      flex-shrink: 0;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: var(--orange);
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      display: grid;
+      place-items: center;
+    }
+
+    /* —— Final CTA —— */
+    .final-cta {
+      position: relative;
+      padding: 0;
+      color: var(--white);
+      overflow: hidden;
+    }
+
+    .final-media {
+      position: absolute;
+      inset: 0;
+    }
+
+    .final-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+    }
+
+    .final-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(100deg, rgba(26, 26, 26, 0.78) 0%, rgba(232, 90, 26, 0.55) 100%);
+    }
+
+    .final-inner {
+      position: relative;
+      z-index: 1;
+      padding: 5.5rem 0;
+      max-width: 34rem;
+    }
+
+    .final-inner h2 {
+      font-size: clamp(2rem, 4.5vw, 2.85rem);
+    }
+
+    .final-inner p {
+      font-size: 1.15rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .final-inner .note {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* —— Footer —— */
+    .site-footer {
+      padding: 2.5rem 0;
+      background: var(--ink);
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 2rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-brand {
+      font-family: var(--font-display);
+      font-weight: 800;
+      color: var(--white);
+      font-size: 1.1rem;
+    }
+
+    .footer-slogan {
+      margin: 0.25rem 0 0;
+      font-size: 0.9rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.25rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 0.9rem;
+    }
+
+    .footer-links a:hover {
+      color: var(--orange);
+    }
+
+    .footer-copy {
+      width: 100%;
+      margin: 1.25rem 0 0;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 0.85rem;
+    }
+
+    /* —— Mobile nav —— */
+    @media (max-width: 820px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .nav-links {
+        position: fixed;
+        top: var(--nav-h);
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        background: var(--white);
+        padding: 0.5rem 0 1rem;
+        border-bottom: 1px solid rgba(255, 107, 44, 0.12);
+        transform: translateY(-120%);
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+
+      .nav-links.is-open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .nav-links li {
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-links a {
+        display: block;
+        padding: 0.9rem 1.25rem;
+      }
+
+      .nav-cta {
+        display: block;
+        margin: 0.5rem 1.25rem 0;
+        text-align: center;
+      }
+    }
+
+    @media (min-width: 821px) {
+      .nav-cta-desktop {
+        display: inline-flex;
+        padding: 0.55rem 1.1rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .nav-cta-desktop {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+      .hero-media img {
+        animation: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav wrap" aria-label="主要導覽">
+      <a class="logo" href="#top">Clario APP</a>
+      <button class="menu-toggle" type="button" aria-label="開啟選單" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#pain">痛點</a></li>
+        <li><a href="#how">怎麼用</a></li>
+        <li><a href="#scenes">適用場景</a></li>
+        <li><a href="#start">開始使用</a></li>
+        <li class="nav-cta"><a class="btn btn-primary" href="#download">立刻下載</a></li>
+      </ul>
+      <a class="btn btn-primary nav-cta-desktop" href="#download">立刻下載</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- Hero -->
+    <section class="hero" aria-label="Clario APP 介紹">
+      <div class="hero-media" aria-hidden="true">
+        <img
+          src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=2000&q=80"
+          alt=""
+          width="2000"
+          height="1125"
+        />
+      </div>
+      <div class="wrap hero-content">
+        <p class="brand-mark reveal">Clario <span>APP</span></p>
+        <h1 class="reveal reveal-delay-1">讓思考更清晰，決策更簡單</h1>
+        <p class="reveal reveal-delay-2">
+          人生選擇、工作規劃、人際關係卡關？Clario 把煩惱轉成選擇題，再用 AI 幫你理出客觀方向。
+        </p>
+        <div class="cta-row reveal reveal-delay-3">
+          <a class="btn btn-primary" href="#download">前往 App / 下載</a>
+          <a class="btn btn-ghost" href="#how">看看怎麼用</a>
+        </div>
+        <p class="note reveal reveal-delay-3">使用前請串接你自己的 Gemini API Key</p>
+      </div>
+    </section>
+
+    <!-- Pain -->
+    <section class="bg-soft" id="pain">
+      <div class="wrap">
+        <p class="section-label reveal">你是不是也這樣？</p>
+        <h2 class="section-title reveal">選擇一多，腦袋就當機？</h2>
+        <p class="section-lead reveal">不是你不夠努力，是問題太雜、資訊太吵。</p>
+        <ol class="pain-list">
+          <li class="reveal">換工作還是留？越想越混亂</li>
+          <li class="reveal reveal-delay-1">感情、人際卡關，不知道該不該開口</li>
+          <li class="reveal reveal-delay-2">日常小事也反覆糾結，越想越累</li>
+        </ol>
+        <p class="pain-close reveal">Clario 不替你「下指令」，而是把問題拆成能回答的選擇題。</p>
+      </div>
+    </section>
+
+    <!-- How -->
+    <section id="how">
+      <div class="wrap">
+        <p class="section-label reveal">怎麼用</p>
+        <h2 class="section-title reveal">三步，把煩惱變成清楚方向</h2>
+        <div class="how-grid">
+          <div>
+            <ol class="steps">
+              <li class="reveal">
+                <span class="step-num" aria-hidden="true">1</span>
+                <div>
+                  <h3>說出你的困擾</h3>
+                  <p>工作、感情、人生選擇，想到什麼就丟進來。</p>
+                </div>
+              </li>
+              <li class="reveal reveal-delay-1">
+                <span class="step-num" aria-hidden="true">2</span>
+                <div>
+                  <h3>變成選擇題</h3>
+                  <p>AI 幫你拆解成可比較的選項。</p>
+                </div>
+              </li>
+              <li class="reveal reveal-delay-2">
+                <span class="step-num" aria-hidden="true">3</span>
+                <div>
+                  <h3>拿到思考方向</h3>
+                  <p>客觀分析，讓你自己做決定，但不再霧煞煞。</p>
+                </div>
+              </li>
+            </ol>
+            <p class="how-note reveal">你的 Gemini API Key，你的思考節奏。資料走你自己的金鑰。</p>
+          </div>
+          <figure class="how-visual reveal">
+            <img
+              src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1200&q=80"
+              alt="手持手機使用 App 的情境"
+              width="1200"
+              height="900"
+            />
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scenes -->
+    <section class="bg-soft" id="scenes">
+      <div class="wrap">
+        <p class="section-label reveal">適用場景</p>
+        <h2 class="section-title reveal">生活裡這些時刻，特別適合 Clario</h2>
+        <div class="scenes-layout">
+          <div class="scenes-visual reveal" aria-hidden="false">
+            <figure>
+              <img
+                src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=900&q=80"
+                alt="年輕專業人士討論職涯規劃"
+                width="900"
+                height="600"
+              />
+            </figure>
+            <figure>
+              <img
+                src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=80"
+                alt="朋友在城市中開心交談"
+                width="900"
+                height="600"
+              />
+            </figure>
+          </div>
+          <div>
+            <ul class="scene-list">
+              <li class="reveal">
+                <h3>工作規劃</h3>
+                <p>要不要轉職、接案、升遷？先釐清再衝。</p>
+              </li>
+              <li class="reveal reveal-delay-1">
+                <h3>人際關係</h3>
+                <p>怎麼回應、要不要設界線？把情緒變成選項。</p>
+              </li>
+              <li class="reveal reveal-delay-2">
+                <h3>人生選擇</h3>
+                <p>搬家、進修、開始新階段？用選擇題看全貌。</p>
+              </li>
+              <li class="reveal reveal-delay-3">
+                <h3>日常困擾</h3>
+                <p>小事也想清楚，少一點內耗、多一點行動力。</p>
+              </li>
+            </ul>
+            <p class="scenes-cta reveal">
+              準備好清一下思緒了嗎？ → <a href="#download">前往 App</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why -->
+    <section id="why">
+      <div class="wrap">
+        <p class="section-label reveal">為什麼是 Clario</p>
+        <h2 class="section-title reveal">不是算命，是幫你想清楚</h2>
+        <ul class="why-points">
+          <li class="reveal">
+            <h3>問題 → 選擇題</h3>
+            <p>把混沌變成可比較的選項。</p>
+          </li>
+          <li class="reveal reveal-delay-1">
+            <h3>AI 智慧分析</h3>
+            <p>整理重點、對照利弊，給你看得到的思路。</p>
+          </li>
+          <li class="reveal reveal-delay-2">
+            <h3>決定還是你的</h3>
+            <p>我們提供方向，不綁架答案；金鑰也是你的。</p>
+          </li>
+        </ul>
+        <p class="why-tagline reveal">清晰一點，日子就輕鬆一點。</p>
+      </div>
+    </section>
+
+    <!-- Get started -->
+    <section class="bg-orange-soft" id="start">
+      <div class="wrap">
+        <p class="section-label reveal">開始使用</p>
+        <h2 class="section-title reveal">兩件事，就能開始</h2>
+        <div class="start-row">
+          <div>
+            <ol class="start-steps">
+              <li class="reveal"><span class="dot">1</span>下載 Clario APP</li>
+              <li class="reveal reveal-delay-1"><span class="dot">2</span>串接你的 Gemini API Key</li>
+            </ol>
+            <p class="section-lead reveal" style="margin-top: 1.25rem;">
+              你帶著自己的金鑰進來，思考更私密、也更彈性。
+            </p>
+          </div>
+          <div class="reveal">
+            <a class="btn btn-primary" href="#download">前往 App / 下載</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta" id="download" aria-label="下載 Clario APP">
+      <div class="final-media" aria-hidden="true">
+        <img
+          src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2000&q=80"
+          alt=""
+          width="2000"
+          height="857"
+        />
+      </div>
+      <div class="wrap final-inner">
+        <h2 class="reveal">下一步，讓腦袋喘口氣</h2>
+        <p class="reveal reveal-delay-1">把煩惱丟進來，讓 Clario 幫你變成清楚的選擇題。</p>
+        <div class="cta-row reveal reveal-delay-2">
+          <a class="btn btn-light" href="https://play.google.com/store/apps/details?id=com.ok.clario" target="_blank" rel="noopener noreferrer">立刻下載 Clario APP</a>
+        </div>
+        <p class="note reveal reveal-delay-2">需自行串接 Gemini API Key</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <div>
+        <div class="footer-brand">Clario APP</div>
+        <p class="footer-slogan">讓思考更清晰，決策更簡單</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="#privacy">隱私</a></li>
+        <li><a href="#contact">聯絡</a></li>
+      </ul>
+      <p class="footer-copy">© 2026 Clario APP</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var toggle = document.querySelector(".menu-toggle");
+      var links = document.getElementById("nav-links");
+
+      if (toggle && links) {
+        toggle.addEventListener("click", function () {
+          var open = links.classList.toggle("is-open");
+          toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+
+        links.querySelectorAll("a").forEach(function (a) {
+          a.addEventListener("click", function () {
+            links.classList.remove("is-open");
+            toggle.setAttribute("aria-expanded", "false");
+          });
+        });
+      }
+
+      var reveals = document.querySelectorAll(".reveal");
+      if ("IntersectionObserver" in window) {
+        var io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+        );
+        reveals.forEach(function (el) {
+          io.observe(el);
+        });
+      } else {
+        reveals.forEach(function (el) {
+          el.classList.add("is-visible");
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
